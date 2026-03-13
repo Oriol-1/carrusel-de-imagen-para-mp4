@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Cartelería — Cine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: rgba(201,168,76,0.15);
+    --text: #f0ede8;
+    --text-muted: #7a7870;
+    --text-dim: #4a4840;
+    --red: #e85d4a;
+    --green: #4aaa7a;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .logo-area h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .logo-area h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .logo-area p {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 0.3px;
+  }
+  .spec-badge {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: var(--surface);
+  }
+  .badge.gold {
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
+
+  /* Main layout */
+  main { padding: 40px 0 80px; }
+
+  /* Sections */
+  .section { margin-bottom: 36px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Drop zone */
+  .dropzone {
+    border: 1.5px dashed var(--border-hover);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .dropzone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--gold);
+    background: var(--surface2);
+  }
+  .dropzone.dragover::before {
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.1) 0%, transparent 70%);
+  }
+  .dropzone input { display: none; }
+  .drop-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border-hover);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .drop-icon svg { opacity: 0.6; }
+  .dropzone h3 {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .dropzone p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+  .dropzone .hint {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    background: var(--surface2);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+  }
+
+  /* Image grid */
+  #image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .img-card {
+    position: relative;
+    aspect-ratio: 9/16;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--surface2);
+    cursor: grab;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, transform 0.15s;
+    user-select: none;
+  }
+  .img-card:hover { border-color: var(--border-hover); }
+  .img-card.dragging { opacity: 0.4; transform: scale(0.95); }
+  .img-card.drag-over { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-dim); }
+  .img-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .img-card .order-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(255,255,255,0.15);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .img-card .remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.75);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+    backdrop-filter: blur(4px);
+  }
+  .img-card .remove-btn:hover { color: var(--red); background: rgba(232,93,74,0.15); }
+  .img-card .name-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 6px 6px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Add more button */
+  .add-more {
+    aspect-ratio: 9/16;
+    border-radius: var(--radius-sm);
+    border: 1.5px dashed var(--border-hover);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .add-more:hover { border-color: var(--gold); color: var(--gold); }
+  .add-more input { display: none; }
+
+  /* Settings */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 500px) { .settings-grid { grid-template-columns: 1fr; } }
+
+  .setting-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .setting-info label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .setting-info span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+  .setting-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .setting-control button {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border-hover);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .setting-control button:hover {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--gold);
+  }
+  .setting-control .value {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gold);
+    min-width: 36px;
+    text-align: center;
+  }
+
+  /* Progress / status */
+  #status-area { display: none; }
+  #status-area.visible { display: block; }
+
+  .status-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .status-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .status-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-hover);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .status-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  .log-area {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', 'Courier New', monospace;
+    line-height: 1.8;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+  .log-area .log-line { display: block; }
+  .log-area .log-line.ok { color: var(--green); }
+  .log-area .log-line.err { color: var(--red); }
+
+  /* Fixed status bar at bottom */
+  .status-bar-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    display: none;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .status-bar-fixed.visible { display: flex; }
+  .status-bar-fixed .sb-phase {
+    color: var(--gold);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .status-bar-fixed .sb-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .status-bar-fixed .sb-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  .status-bar-fixed .sb-pct {
+    color: var(--text);
+    font-weight: 500;
+    min-width: 40px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .status-bar-fixed .sb-detail {
+    color: var(--text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Result */
+  #result-area { display: none; margin-top: 20px; }
+  #result-area.visible { display: block; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid rgba(74,170,122,0.3);
+    border-radius: var(--radius);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .result-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(74,170,122,0.1);
+    border: 1px solid rgba(74,170,122,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--green);
+    font-size: 20px;
+  }
+  .result-info { flex: 1; }
+  .result-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+  .result-info p { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+  .result-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+    display: flex;
+    gap: 12px;
+  }
+  .result-meta span {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  /* Generate button */
+  .generate-btn {
+    width: 100%;
+    padding: 16px 32px;
+    background: var(--gold);
+    color: #0a0a0f;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.3px;
+    margin-top: 8px;
+  }
+  .generate-btn:hover { background: var(--gold-light); }
+  .generate-btn:active { transform: scale(0.99); }
+  .generate-btn:disabled {
+    background: var(--surface2);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: var(--gold);
+    color: #0a0a0f;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .download-btn:hover { background: var(--gold-light); }
+
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    display: none;
+  }
+  .empty-state.visible { display: block; }
+
+  /* Warn banner */
+  .warn-banner {
+    background: rgba(232,93,74,0.08);
+    border: 1px solid rgba(232,93,74,0.2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--red);
+    margin-top: 12px;
+    display: none;
+  }
+  .warn-banner.visible { display: block; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 0;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  footer span { font-weight: 300; }
+
+  /* Resolution selector */
+  .res-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .res-preset {
+    padding: 6px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border-hover);
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .res-preset:hover { border-color: var(--gold); color: var(--gold); }
+  .res-preset.active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .res-custom-row {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .res-custom-row.visible { display: flex; }
+  .res-custom-row input {
+    width: 80px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-hover);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+  }
+  .res-custom-row input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .res-custom-row span {
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  .resolution-setting {
+    grid-column: 1 / -1;
+    align-items: stretch;
+  }
+  .resolution-setting > div {
+    width: 100%;
+  }
+  .resolution-setting .setting-info {
+    margin-bottom: 4px;
+  }
+
+  /* Cancel button */
+  .cancel-btn {
+    width: 100%;
+    padding: 12px 24px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    display: none;
+  }
+  .cancel-btn.visible { display: block; }
+  .cancel-btn:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: rgba(232,93,74,0.08);
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div class="logo-area">
+        <h1>Cartelería <em>Cine</em></h1>
+        <p>Generador de vídeo para señalización digital · Sharp/NEC MPi4</p>
+      </div>
+      <div class="spec-badge" id="spec-badges">
+        <span class="badge gold">H264</span>
+        <span class="badge gold" id="badge-res">1080×1920</span>
+        <span class="badge" id="badge-orient">Portrait</span>
+        <span class="badge">1fps</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- PASO 1: Subir imágenes -->
+    <div class="section">
+      <div class="section-label">01 · Imágenes</div>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/jpg" multiple>
+        <div class="drop-icon">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path d="M4 16l4-4 4 4 4-6 4 6M4 20h16M4 4h16"/>
+          </svg>
+        </div>
+        <h3>Arrastra los carteles aquí</h3>
+        <p>JPG o PNG · Se ordenan por nombre de archivo</p>
+        <span class="hint">o haz clic para seleccionar</span>
+      </div>
+
+      <div class="warn-banner" id="warn-portrait">
+        ⚠ Algunas imágenes parecen estar en formato horizontal. Se recomienda usar imágenes verticales (portrait) para mejor resultado en el totem.
+      </div>
+
+      <div id="image-grid"></div>
+      <div class="empty-state" id="empty-state">Aún no hay imágenes. Añade carteles arriba.</div>
+    </div>
+
+    <!-- PASO 2: Configuración -->
+    <div class="section">
+      <div class="section-label">02 · Configuración</div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Segundos por imagen</label>
+            <span>Tiempo que se muestra cada cartel</span>
+          </div>
+          <div class="setting-control">
+            <button onclick="changeDelay(-1)">−</button>
+            <span class="value" id="delay-val">5s</span>
+            <button onclick="changeDelay(1)">+</button>
+          </div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <label>Calidad de vídeo</label>
+            <span>Bitrate para el MPi4 Kit</span>
+          </div>
+          <div class="setting-control">
+            <span class="value" style="font-size:13px;min-width:60px">10 Mbps</span>
+          </div>
+        </div>
+        <div class="setting-item resolution-setting">
+          <div>
+            <div class="setting-info">
+              <label>Resolución del vídeo</label>
+              <span>Elige un preset o introduce una resolución personalizada</span>
+            </div>
+            <div class="res-presets" id="res-presets"></div>
+            <div class="res-custom-row" id="res-custom-row">
+              <input type="number" id="custom-w" placeholder="Ancho" min="100" max="7680" value="1080">
+              <span>×</span>
+              <input type="number" id="custom-h" placeholder="Alto" min="100" max="7680" value="1920">
+              <span>px</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3: Generar -->
+    <div class="section">
+      <div class="section-label">03 · Generar</div>
+
+      <div id="status-area">
+        <div class="status-card">
+          <div class="status-header">
+            <div class="status-spinner" id="spinner"></div>
+            <div>
+              <div class="status-title" id="status-title">Iniciando...</div>
+              <div class="status-sub" id="status-sub">Preparando ffmpeg</div>
+            </div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="log-area" id="log-area"></div>
+        </div>
+      </div>
+
+      <div id="result-area">
+        <div class="result-card">
+          <div class="result-icon">✓</div>
+          <div class="result-info">
+            <h4 id="result-title">carousel.mp4 listo</h4>
+            <p>Copia este archivo al USB y conéctalo al totem. El Video Looper lo reproducirá automáticamente.</p>
+            <div class="result-meta" id="result-meta"></div>
+          </div>
+          <a id="download-link" class="download-btn" download="carousel.mp4">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg>
+            Descargar
+          </a>
+        </div>
+      </div>
+
+      <button class="generate-btn" id="generate-btn" onclick="startGeneration()" disabled>
+        Generar vídeo MP4
+      </button>
+      <button class="cancel-btn" id="cancel-btn" onclick="cancelGeneration()">
+        Cancelar generación
+      </button>
+    </div>
+
+  </main>
+
+  <footer>
+    <span id="footer-specs">Sharp/NEC MPi4 Kit · Video Looper compatible · H264 MPEG-4 AVC · 1080×1920 · Slideshow optimizado</span>
+    <span>Procesado localmente en el navegador</span>
+  </footer>
+</div>
+
+<!-- Fixed status bar (always visible during generation) -->
+<div class="status-bar-fixed" id="status-bar-fixed">
+  <span class="sb-phase" id="sb-phase">Iniciando...</span>
+  <div class="sb-track"><div class="sb-fill" id="sb-fill"></div></div>
+  <span class="sb-pct" id="sb-pct">0%</span>
+  <span class="sb-detail" id="sb-detail"></span>
+</div>
+
+<script type="module">
+// ── ffmpeg.wasm v0.12 ─────────────────────────────────────────────────────
+import { FFmpeg } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js';
+import { toBlobURL } from 'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js';
+window._FFmpeg = FFmpeg;
+window._toBlobURL = toBlobURL;
+
+// Builds a self-contained ESM worker blob.
+// The real worker.js imports "./const.js" and "./errors.js" (relative) which
+// fail from a blob:// URL because blobs have no directory base.
+// Solution: inline all dependencies and create a single ESM module blob.
+// The Worker is created with type:"module" by FFmpeg.load(), so this needs
+// to be valid ESM (we add `export {}` at the end to mark it as a module).
+window._buildWorkerURL = function(coreURL, wasmURL) {
+  const script = `
+// Self-contained ESM worker — no relative imports
+const FFMessageType = {
+  LOAD:"LOAD",EXEC:"EXEC",WRITE_FILE:"WRITE_FILE",READ_FILE:"READ_FILE",
+  DELETE_FILE:"DELETE_FILE",RENAME:"RENAME",CREATE_DIR:"CREATE_DIR",
+  LIST_DIR:"LIST_DIR",DELETE_DIR:"DELETE_DIR",ERROR:"ERROR",
+  PROGRESS:"PROGRESS",LOG:"LOG",MOUNT:"MOUNT",UNMOUNT:"UNMOUNT",
+};
+const ERROR_NOT_LOADED = new Error("ffmpeg is not loaded");
+const ERROR_UNKNOWN_MESSAGE_TYPE = new Error("unknown message type");
+const ERROR_IMPORT_FAILURE = new Error("failed to import ffmpeg-core.js");
+
+const CORE_URL = ${JSON.stringify(coreURL)};
+const WASM_URL = ${JSON.stringify(wasmURL)};
+
+let ffmpeg = null;
+
+async function load() {
+  // ESM core supports dynamic import() from a module Worker.
+  // import.meta.url inside the imported module returns the blob URL of the core,
+  // but we override wasm lookup via mainScriptUrlOrBlob so that's irrelevant.
+  const mod = await import(CORE_URL);
+  const createFFmpegCore = mod.default ?? mod.createFFmpegCore;
+  if (typeof createFFmpegCore !== "function") throw ERROR_IMPORT_FAILURE;
+  ffmpeg = await createFFmpegCore({
+    mainScriptUrlOrBlob: CORE_URL + "#" + btoa(JSON.stringify({ wasmURL: WASM_URL, workerURL: "" })),
+  });
+  ffmpeg.setLogger(d => self.postMessage({ type: FFMessageType.LOG, data: d }));
+  ffmpeg.setProgress(d => self.postMessage({ type: FFMessageType.PROGRESS, data: d }));
+  return true;
+}
+
+self.onmessage = async ({ data: { id, type, data: d } }) => {
+  try {
+    if (type !== FFMessageType.LOAD && !ffmpeg) throw ERROR_NOT_LOADED;
+    let result;
+    switch (type) {
+      case FFMessageType.LOAD:
+        result = await load();
+        break;
+      case FFMessageType.EXEC:
+        ffmpeg.setTimeout(d.timeout ?? -1);
+        ffmpeg.exec(...d.args);
+        result = ffmpeg.ret;
+        ffmpeg.reset();
+        break;
+      case FFMessageType.WRITE_FILE:
+        ffmpeg.FS.writeFile(d.path, d.data);
+        result = true;
+        break;
+      case FFMessageType.READ_FILE:
+        result = ffmpeg.FS.readFile(d.path, { encoding: d.encoding });
+        break;
+      case FFMessageType.DELETE_FILE:
+        ffmpeg.FS.unlink(d.path);
+        result = true;
+        break;
+      case FFMessageType.RENAME:
+        ffmpeg.FS.rename(d.oldPath, d.newPath);
+        result = true;
+        break;
+      case FFMessageType.CREATE_DIR:
+        ffmpeg.FS.mkdir(d.path);
+        result = true;
+        break;
+      case FFMessageType.LIST_DIR: {
+        const names = ffmpeg.FS.readdir(d.path);
+        result = names.map(n => {
+          const s = ffmpeg.FS.stat(d.path + "/" + n);
+          return { name: n, isDir: ffmpeg.FS.isDir(s.mode) };
+        });
+        break;
+      }
+      case FFMessageType.DELETE_DIR:
+        ffmpeg.FS.rmdir(d.path);
+        result = true;
+        break;
+      default:
+        throw ERROR_UNKNOWN_MESSAGE_TYPE;
+    }
+    const trans = result instanceof Uint8Array ? [result.buffer] : [];
+    self.postMessage({ id, type, data: result }, trans);
+  } catch(e) {
+    self.postMessage({ id, type: FFMessageType.ERROR, data: String(e) });
+  }
+};
+
+export {}; // Mark as ESM module (required since Worker is created with type:"module")
+`;
+  return URL.createObjectURL(new Blob([script], { type: 'text/javascript' }));
+};
+</script>
+
+<script>
+// ── Resolution presets ────────────────────────────────────────────────────
+const PRESETS = [
+  { label: '1080×1920', w: 1080, h: 1920, tag: 'Portrait FHD · MPi4' },
+  { label: '1920×1080', w: 1920, h: 1080, tag: 'Landscape FHD' },
+  { label: '720×1280',  w: 720,  h: 1280, tag: 'Portrait HD' },
+  { label: '1280×720',  w: 1280, h: 720,  tag: 'Landscape HD' },
+  { label: '2160×3840', w: 2160, h: 3840, tag: 'Portrait 4K' },
+  { label: '3840×2160', w: 3840, h: 2160, tag: 'Landscape 4K' },
+  { label: 'Personalizado', w: 0, h: 0, tag: 'Custom' },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────
+let images = []; // [{file, name, url, id}]
+let delaySeconds = 5;
+let targetWidth = 1080;
+let targetHeight = 1920;
+let activePresetIdx = 0;
+let ffmpegInstance = null;
+let ffmpegLoaded = false;
+let generating = false;
+let cancelled = false;
+let dragSrcIndex = null;
+
+// ── DOM refs ──────────────────────────────────────────────────────────────
+const dropzone     = document.getElementById('dropzone');
+const fileInput    = document.getElementById('file-input');
+const grid         = document.getElementById('image-grid');
+const emptyState   = document.getElementById('empty-state');
+const generateBtn  = document.getElementById('generate-btn');
+const cancelBtn    = document.getElementById('cancel-btn');
+const statusArea   = document.getElementById('status-area');
+const resultArea   = document.getElementById('result-area');
+const warnPortrait = document.getElementById('warn-portrait');
+const resPresetsEl = document.getElementById('res-presets');
+const resCustomRow = document.getElementById('res-custom-row');
+const customW      = document.getElementById('custom-w');
+const customH      = document.getElementById('custom-h');
+
+// ── Drop zone ─────────────────────────────────────────────────────────────
+dropzone.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => addFiles([...e.target.files]));
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  addFiles([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
+});
+
+// ── File handling ─────────────────────────────────────────────────────────
+function addFiles(files) {
+  const sorted = [...files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+  sorted.forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    const id = Date.now() + Math.random();
+    images.push({ file, name: file.name, url, id });
+  });
+  checkOrientationWarning();
+  renderGrid();
+  updateGenerateBtn();
+}
+
+function removeImage(id) {
+  const img = images.find(i => i.id === id);
+  if (img) URL.revokeObjectURL(img.url);
+  images = images.filter(i => i.id !== id);
+  checkOrientationWarning();
+  renderGrid();
+  updateGenerateBtn();
+}
+
+function checkOrientationWarning() {
+  if (images.length === 0) { warnPortrait.classList.remove('visible'); return; }
+  const isTargetPortrait = targetHeight > targetWidth;
+  let hasMismatch = false;
+  let checked = 0;
+  images.forEach(img => {
+    const el = new Image();
+    el.onload = () => {
+      const isImagePortrait = el.naturalHeight > el.naturalWidth;
+      if (isImagePortrait !== isTargetPortrait) hasMismatch = true;
+      checked++;
+      if (checked === images.length) {
+        warnPortrait.textContent = hasMismatch
+          ? `⚠ Algunas imágenes no coinciden con la orientación ${isTargetPortrait ? 'vertical (portrait)' : 'horizontal (landscape)'} seleccionada. Se adaptarán con bandas negras automáticamente.`
+          : '';
+        warnPortrait.classList.toggle('visible', hasMismatch);
+      }
+    };
+    el.src = img.url;
+  });
+}
+
+// ── Grid rendering ────────────────────────────────────────────────────────
+function renderGrid() {
+  grid.innerHTML = '';
+  emptyState.classList.toggle('visible', images.length === 0);
+
+  images.forEach((img, i) => {
+    const card = document.createElement('div');
+    card.className = 'img-card';
+    card.draggable = true;
+    card.dataset.index = i;
+    card.innerHTML = `
+      <img src="${img.url}" alt="${img.name}" loading="lazy">
+      <div class="order-badge">${i + 1}</div>
+      <button class="remove-btn" title="Eliminar">×</button>
+      <div class="name-label">${img.name}</div>
+    `;
+    card.querySelector('.remove-btn').onclick = (e) => {
+      e.stopPropagation();
+      removeImage(img.id);
+    };
+
+    // Drag to reorder
+    card.addEventListener('dragstart', e => {
+      dragSrcIndex = i;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      card.classList.add('drag-over');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      card.classList.remove('drag-over');
+      if (dragSrcIndex !== null && dragSrcIndex !== i) {
+        const moved = images.splice(dragSrcIndex, 1)[0];
+        images.splice(i, 0, moved);
+        renderGrid();
+      }
+      dragSrcIndex = null;
+    });
+
+    grid.appendChild(card);
+  });
+
+  // Add more button
+  if (images.length > 0) {
+    const addBtn = document.createElement('label');
+    addBtn.className = 'add-more';
+    addBtn.innerHTML = `
+      <input type="file" accept="image/jpeg,image/png" multiple>
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg>
+      <span>Añadir más</span>
+    `;
+    addBtn.querySelector('input').addEventListener('change', e => addFiles([...e.target.files]));
+    grid.appendChild(addBtn);
+  }
+}
+
+// ── Resolution presets UI ─────────────────────────────────────────────────
+function renderResPresets() {
+  resPresetsEl.innerHTML = '';
+  PRESETS.forEach((p, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'res-preset' + (idx === activePresetIdx ? ' active' : '');
+    btn.textContent = p.label;
+    btn.title = p.tag;
+    btn.onclick = () => selectPreset(idx);
+    resPresetsEl.appendChild(btn);
+  });
+  resCustomRow.classList.toggle('visible', PRESETS[activePresetIdx].label === 'Personalizado');
+}
+
+function selectPreset(idx) {
+  activePresetIdx = idx;
+  const p = PRESETS[idx];
+  if (p.w > 0 && p.h > 0) {
+    targetWidth = p.w;
+    targetHeight = p.h;
+  } else {
+    // Custom — read from inputs
+    applyCustomRes();
+  }
+  renderResPresets();
+  updateSpecBadges();
+  checkOrientationWarning();
+}
+
+function applyCustomRes() {
+  const w = parseInt(customW.value) || 1080;
+  const h = parseInt(customH.value) || 1920;
+  targetWidth = Math.max(100, Math.min(7680, w));
+  targetHeight = Math.max(100, Math.min(7680, h));
+  // Ensure even (H264 requirement)
+  targetWidth = Math.round(targetWidth / 2) * 2;
+  targetHeight = Math.round(targetHeight / 2) * 2;
+  customW.value = targetWidth;
+  customH.value = targetHeight;
+  updateSpecBadges();
+  checkOrientationWarning();
+}
+
+customW.addEventListener('change', () => { if (PRESETS[activePresetIdx].label === 'Personalizado') applyCustomRes(); });
+customH.addEventListener('change', () => { if (PRESETS[activePresetIdx].label === 'Personalizado') applyCustomRes(); });
+
+function updateSpecBadges() {
+  const orient = targetHeight > targetWidth ? 'Portrait' : (targetWidth > targetHeight ? 'Landscape' : 'Square');
+  document.getElementById('badge-res').textContent = `${targetWidth}×${targetHeight}`;
+  document.getElementById('badge-orient').textContent = orient;
+  document.getElementById('footer-specs').textContent =
+    `H264 MPEG-4 AVC · ${targetWidth}×${targetHeight} · ${orient} · Slideshow optimizado`;
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────
+function changeDelay(delta) {
+  delaySeconds = Math.max(1, Math.min(30, delaySeconds + delta));
+  document.getElementById('delay-val').textContent = delaySeconds + 's';
+}
+
+function updateGenerateBtn() {
+  generateBtn.disabled = images.length === 0 || generating;
+  if (images.length === 0) generateBtn.textContent = 'Añade imágenes primero';
+  else generateBtn.textContent = `Generar vídeo MP4 · ${images.length} imagen${images.length !== 1 ? 'es' : ''}`;
+}
+
+// ── Logging ───────────────────────────────────────────────────────────────
+function log(msg, type = '') {
+  const logArea = document.getElementById('log-area');
+  const line = document.createElement('span');
+  line.className = 'log-line' + (type ? ' ' + type : '');
+  line.textContent = msg;
+  logArea.appendChild(line);
+  logArea.appendChild(document.createElement('br'));
+  logArea.scrollTop = logArea.scrollHeight;
+}
+
+function setProgress(pct, title, sub) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  if (title) document.getElementById('status-title').textContent = title;
+  if (sub !== undefined) document.getElementById('status-sub').textContent = sub;
+  // Also update fixed status bar
+  const bar = document.getElementById('status-bar-fixed');
+  document.getElementById('sb-fill').style.width = pct + '%';
+  document.getElementById('sb-pct').textContent = Math.round(pct) + '%';
+  if (title) document.getElementById('sb-phase').textContent = title;
+  if (sub !== undefined) document.getElementById('sb-detail').textContent = sub;
+}
+
+// ── Canvas pre-processing (fast native resize) ───────────────────────────
+function preprocessImage(file, tw, th) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = tw;
+      canvas.height = th;
+      const ctx = canvas.getContext('2d');
+
+      // Black background
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, tw, th);
+
+      // Fit-contain: scale image to fit inside tw×th, centered
+      const scale = Math.min(tw / img.naturalWidth, th / img.naturalHeight);
+      const dw = Math.round(img.naturalWidth * scale);
+      const dh = Math.round(img.naturalHeight * scale);
+      const dx = Math.round((tw - dw) / 2);
+      const dy = Math.round((th - dh) / 2);
+
+      ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, dx, dy, dw, dh);
+
+      canvas.toBlob(blob => {
+        if (!blob) { reject(new Error('Canvas export failed')); return; }
+        blob.arrayBuffer().then(buf => {
+          resolve(new Uint8Array(buf));
+          // Free resources
+          canvas.width = 0;
+          canvas.height = 0;
+        }).catch(reject);
+      }, 'image/jpeg', 0.92);
+
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Parallel batch processing — max concurrency to avoid OOM
+async function preprocessAllImages(imageList, tw, th, onProgress) {
+  const results = new Array(imageList.length);
+  const CONCURRENCY = 4;
+  let nextIdx = 0;
+  let doneCount = 0;
+
+  async function worker() {
+    while (nextIdx < imageList.length) {
+      if (cancelled) throw new Error('Cancelado por el usuario');
+      const idx = nextIdx++;
+      results[idx] = await preprocessImage(imageList[idx].file, tw, th);
+      doneCount++;
+      if (onProgress) onProgress(doneCount, imageList.length, imageList[idx].name);
+    }
+  }
+
+  const workers = [];
+  for (let i = 0; i < Math.min(CONCURRENCY, imageList.length); i++) {
+    workers.push(worker());
+  }
+  await Promise.all(workers);
+  return results;
+}
+
+// ── Cancel generation ─────────────────────────────────────────────────────
+function cancelGeneration() {
+  if (!generating) return;
+  cancelled = true;
+  log('Cancelando...', 'err');
+
+  // Terminate ffmpeg instance if running
+  if (ffmpegInstance) {
+    try { ffmpegInstance.terminate(); } catch(e) {}
+    ffmpegInstance = null;
+    ffmpegLoaded = false;
+  }
+
+  // UI reset is handled by startGeneration()'s finally block
+}
+
+// ── Main generation ───────────────────────────────────────────────────────
+async function startGeneration() {
+  if (generating || images.length === 0) return;
+  generating = true;
+  cancelled = false;
+  generateBtn.disabled = true;
+  generateBtn.textContent = 'Generando...';
+  generateBtn.style.display = 'none';
+  cancelBtn.classList.add('visible');
+  resultArea.classList.remove('visible');
+  statusArea.classList.add('visible');
+  document.getElementById('status-bar-fixed').classList.add('visible');
+  document.getElementById('log-area').innerHTML = '';
+  document.getElementById('spinner').style.display = 'block';
+  setProgress(0, 'Cargando ffmpeg', 'Primera vez ~10 MB, luego es instantáneo');
+
+  // Ensure even dimensions (H264 requirement)
+  const tw = Math.round(targetWidth / 2) * 2;
+  const th = Math.round(targetHeight / 2) * 2;
+  const orient = th > tw ? 'Portrait' : 'Landscape';
+
+  try {
+    const FFmpeg = window._FFmpeg;
+    const toBlobURL = window._toBlobURL;
+
+    // ── Phase 1: Load FFmpeg (0–10%) ──────────────────────────────────
+    if (!ffmpegInstance) {
+      ffmpegInstance = new FFmpeg();
+      ffmpegInstance.on('log', ({ message }) => {
+        if (message && !message.startsWith('ff')) {
+          const logArea = document.getElementById('log-area');
+          if (logArea.children.length < 60) log(message);
+        }
+      });
+      ffmpegInstance.on('progress', ({ progress, time }) => {
+        if (progress > 0 && progress <= 1) {
+          const pct = 50 + Math.round(progress * 45);
+          setProgress(pct, 'Codificando vídeo', `${Math.round(progress * 100)}% · codificando frames`);
+        }
+      });
+    }
+
+    if (!ffmpegLoaded) {
+      // Use the ESM build — supports dynamic import() from a module Worker.
+      const coreBaseESM = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm';
+
+      log('Descargando componentes de ffmpeg...');
+      setProgress(2, 'Descargando ffmpeg', 'Core JS...');
+
+      let coreURL, wasmURL;
+      try {
+        coreURL = await toBlobURL(`${coreBaseESM}/ffmpeg-core.js`, 'text/javascript');
+        log('  ✓ Core JS');
+
+        setProgress(4, 'Descargando ffmpeg', 'WASM binario (~31 MB)...');
+        wasmURL = await toBlobURL(`${coreBaseESM}/ffmpeg-core.wasm`, 'application/wasm');
+        log('  ✓ WASM');
+      } catch (dlErr) {
+        throw new Error('No se pudo descargar ffmpeg. Revisa tu conexión: ' + dlErr.message);
+      }
+
+      setProgress(8, 'Inicializando ffmpeg', 'Preparando worker...');
+
+      // Build a self-contained ESM worker blob (no relative imports).
+      // This is the fix: the real worker.js uses "./const.js" and "./errors.js"
+      // which fail from blob:// URLs. Our inlined worker has no relative imports.
+      const workerURL = window._buildWorkerURL(coreURL, wasmURL);
+      log('  ✓ Worker listo');
+
+      setProgress(9, 'Inicializando ffmpeg', 'Compilando WASM en Worker...');
+      log('Compilando WASM...');
+
+      const loadPromise = ffmpegInstance.load({ classWorkerURL: workerURL });
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(
+          'Tiempo de espera agotado. Prueba a usar un servidor local: abre una terminal en la carpeta y ejecuta: python -m http.server 8080'
+        )), 120000)
+      );
+      await Promise.race([loadPromise, timeout]);
+
+      // Clean up worker blob URL after it's been loaded
+      URL.revokeObjectURL(workerURL);
+
+      ffmpegLoaded = true;
+      log('ffmpeg listo ✓', 'ok');
+    }
+
+    if (cancelled) throw new Error('Cancelado');
+    setProgress(10, 'Pre-procesando imágenes', `Escalando ${images.length} imágenes a ${tw}×${th}`);
+    log(`${images.length} imágenes · ${delaySeconds}s cada una · ${tw}×${th} ${orient}`);
+
+    // ── Phase 2: Canvas pre-processing (10–40%) ──────────────────────
+    const preprocessed = await preprocessAllImages(images, tw, th, (done, total, name) => {
+      const pct = 10 + Math.round((done / total) * 30);
+      setProgress(pct, 'Pre-procesando imágenes', `${done}/${total} · ${name}`);
+      log(`  ✓ ${name}`);
+    });
+
+    if (cancelled) throw new Error('Cancelado');
+
+    // ── Phase 3: Write duplicated frames to FFmpeg FS (40–50%) ────
+    // Each image is written delaySeconds times to simulate duration at 1fps.
+    // This avoids the concat demuxer which hangs in ffmpeg.wasm.
+    setProgress(40, 'Preparando codificación', `Escribiendo frames`);
+    let totalFrames = 0;
+    for (let i = 0; i < preprocessed.length; i++) {
+      if (cancelled) throw new Error('Cancelado');
+      for (let s = 0; s < delaySeconds; s++) {
+        const fname = `img${String(totalFrames).padStart(5, '0')}.jpg`;
+        // writeFile() transfers (detaches) the ArrayBuffer to the Worker.
+        // Slice to create a fresh copy for each write — original is detached after first use.
+        const isLast = s === delaySeconds - 1;
+        await ffmpegInstance.writeFile(fname, isLast ? preprocessed[i] : preprocessed[i].slice());
+        totalFrames++;
+      }
+      preprocessed[i] = null; // Free memory after all copies written
+      setProgress(40 + Math.round(((i + 1) / preprocessed.length) * 10), 'Preparando codificación', `${i + 1}/${preprocessed.length}`);
+    }
+    log(`${totalFrames} frames escritos (${images.length} imgs × ${delaySeconds}s)`, 'ok');
+
+    if (cancelled) throw new Error('Cancelado');
+
+    // ── Phase 4: H264 encoding (50–95%) ──────────────────────────────
+    // Image sequence at 1fps — most reliable approach for ffmpeg.wasm.
+    // Each image was duplicated delaySeconds times, so totalFrames = images × delay.
+    setProgress(50, 'Codificando vídeo', `H264 · ${tw}×${th} · ${totalFrames} frames`);
+    log('Iniciando codificación H264...');
+    log(`  ${totalFrames} frames · ${images.length} imgs × ${delaySeconds}s · ultrafast`);
+
+    await ffmpegInstance.exec([
+      '-framerate', '1',
+      '-i', 'img%05d.jpg',
+      '-c:v', 'libx264',
+      '-preset', 'ultrafast',
+      '-pix_fmt', 'yuv420p',
+      '-crf', '23',
+      '-g', '1',
+      '-movflags', '+faststart',
+      '-an',
+      '-y',
+      'carousel.mp4'
+    ]);
+
+    if (cancelled) throw new Error('Cancelado');
+
+    // ── Phase 5: Prepare download (95–100%) ──────────────────────────
+    setProgress(96, 'Finalizando', 'Preparando descarga...');
+    log('Codificación completada', 'ok');
+
+    const data = await ffmpegInstance.readFile('carousel.mp4');
+    const blob = new Blob([data.buffer], { type: 'video/mp4' });
+
+    // Revoke previous blob URL if exists (prevent memory leak)
+    const prevHref = document.getElementById('download-link').href;
+    if (prevHref && prevHref.startsWith('blob:')) URL.revokeObjectURL(prevHref);
+
+    const url = URL.createObjectURL(blob);
+    const sizeMB = (blob.size / 1024 / 1024).toFixed(1);
+    const totalSec = images.length * delaySeconds;
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    const durationStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+
+    document.getElementById('download-link').href = url;
+    document.getElementById('download-link').download = 'carousel.mp4';
+    document.getElementById('result-title').textContent = `carousel.mp4 · ${sizeMB} MB`;
+    document.getElementById('result-meta').innerHTML = `
+      <span>${images.length} imágenes</span>
+      <span>${durationStr} duración</span>
+      <span>H264 · ${tw}×${th}</span>
+      <span>${delaySeconds}s / imagen</span>
+      <span>Loop ∞</span>
+    `;
+
+    resultArea.classList.add('visible');
+    setProgress(100, '✓ Vídeo listo', `${sizeMB} MB · ${durationStr}`);
+    document.getElementById('spinner').style.display = 'none';
+    log(`✓ Listo · ${sizeMB} MB · ${durationStr} · ${tw}×${th}`, 'ok');
+
+    // Cleanup virtual FS
+    try { await ffmpegInstance.deleteFile('carousel.mp4'); } catch(e) {}
+    for (let i = 0; i < totalFrames; i++) {
+      try { await ffmpegInstance.deleteFile(`img${String(i).padStart(5, '0')}.jpg`); } catch(e) {}
+    }
+
+  } catch (err) {
+    if (cancelled) {
+      log('Generación cancelada', 'err');
+      setProgress(0, 'Generación cancelada', '');
+      document.getElementById('spinner').style.display = 'none';
+    } else {
+      log('Error: ' + err.message, 'err');
+      setProgress(0, 'Error al generar', err.message);
+      document.getElementById('spinner').style.display = 'none';
+      console.error(err);
+      // Reset ffmpeg on error so next attempt starts clean
+      if (ffmpegInstance) {
+        try { ffmpegInstance.terminate(); } catch(e) {}
+        ffmpegInstance = null;
+        ffmpegLoaded = false;
+      }
+    }
+  }
+
+  generating = false;
+  cancelled = false;
+  cancelBtn.classList.remove('visible');
+  generateBtn.style.display = '';
+  generateBtn.disabled = false;
+  document.getElementById('status-bar-fixed').classList.remove('visible');
+  updateGenerateBtn();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+renderResPresets();
+renderGrid();
+updateGenerateBtn();
+updateSpecBadges();
+</script>
+</body>
+</html>
