@@ -966,9 +966,22 @@ const resCustomRow = document.getElementById('res-custom-row');
 const customW      = document.getElementById('custom-w');
 const customH      = document.getElementById('custom-h');
 
+// ── HTML escape helper ────────────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ── Drop zone ─────────────────────────────────────────────────────────────
 dropzone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => addFiles([...e.target.files]));
+fileInput.addEventListener('change', e => {
+  addFiles([...e.target.files]);
+  fileInput.value = '';
+});
 
 dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
 dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
@@ -1006,19 +1019,21 @@ function checkOrientationWarning() {
   const isTargetPortrait = targetHeight > targetWidth;
   let hasMismatch = false;
   let checked = 0;
+  const total = images.length;
   images.forEach(img => {
     const el = new Image();
-    el.onload = () => {
-      const isImagePortrait = el.naturalHeight > el.naturalWidth;
-      if (isImagePortrait !== isTargetPortrait) hasMismatch = true;
+    const onDone = (isPortrait) => {
+      if (isPortrait !== isTargetPortrait) hasMismatch = true;
       checked++;
-      if (checked === images.length) {
+      if (checked === total) {
         warnPortrait.textContent = hasMismatch
           ? `⚠ Algunas imágenes no coinciden con la orientación ${isTargetPortrait ? 'vertical (portrait)' : 'horizontal (landscape)'} seleccionada. Se adaptarán con bandas negras automáticamente.`
           : '';
         warnPortrait.classList.toggle('visible', hasMismatch);
       }
     };
+    el.onload = () => onDone(el.naturalHeight > el.naturalWidth);
+    el.onerror = () => onDone(isTargetPortrait); // assume matching orientation on error
     el.src = img.url;
   });
 }
@@ -1034,10 +1049,10 @@ function renderGrid() {
     card.draggable = true;
     card.dataset.index = i;
     card.innerHTML = `
-      <img src="${img.url}" alt="${img.name}" loading="lazy">
+      <img src="${esc(img.url)}" alt="${esc(img.name)}" loading="lazy">
       <div class="order-badge">${i + 1}</div>
       <button class="remove-btn" title="Eliminar">×</button>
-      <div class="name-label">${img.name}</div>
+      <div class="name-label">${esc(img.name)}</div>
     `;
     card.querySelector('.remove-btn').onclick = (e) => {
       e.stopPropagation();
@@ -1079,7 +1094,10 @@ function renderGrid() {
       <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg>
       <span>Añadir más</span>
     `;
-    addBtn.querySelector('input').addEventListener('change', e => addFiles([...e.target.files]));
+    addBtn.querySelector('input').addEventListener('change', e => {
+      addFiles([...e.target.files]);
+      e.target.value = '';
+    });
     grid.appendChild(addBtn);
   }
 }
@@ -1209,7 +1227,10 @@ function preprocessImage(file, tw, th) {
 
       URL.revokeObjectURL(img.src);
     };
-    img.onerror = () => reject(new Error('Failed to load image'));
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src);
+      reject(new Error('Failed to load image'));
+    };
     img.src = URL.createObjectURL(file);
   });
 }
